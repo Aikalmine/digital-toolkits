@@ -1,4 +1,3 @@
-import React from "react";
 import { Quill } from "react-quill";
 
 // Custom Undo button icon component for Quill editor. You can import it directly
@@ -25,12 +24,33 @@ const CustomRedo = () => (
   </svg>
 );
 
+// print button icon component for Quill editor
+const CustomPrint = () => (
+<svg width="16" height="16" fill="currentColor" className="bi bi-printer" viewBox="0 0 18 18"> 
+  <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/> 
+  <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z"/>
+ </svg>
+);
+
+
 // Undo and redo functions for Custom Toolbar
 function undoChange() {
   this.quill.history.undo();
 }
 function redoChange() {
   this.quill.history.redo();
+}
+
+function printChange(){
+  //console.log('print'); 
+  let notepadText = document.getElementById('notepadText');
+  if (notepadText !== null){
+    let printContents = notepadText.innerHTML;
+    let originalContents = document.body.innerHTML;
+    document.body.innerHTML = printContents;
+    window.print();
+    document.body.innerHTML = originalContents; 
+  } 
 }
 
 // Add sizes to whitelist and register them
@@ -56,7 +76,8 @@ export const modules = {
     container: "#toolbar",
     handlers: {
       undo: undoChange,
-      redo: redoChange
+      redo: redoChange,
+      print:printChange
     }
   },
   history: {
@@ -151,6 +172,9 @@ export const QuillToolbar = () => (
       </button>
       <button className="ql-redo">
         <CustomRedo />
+      </button>
+      <button className="ql-print">
+        <CustomPrint />
       </button>
     </span>
   </div>
