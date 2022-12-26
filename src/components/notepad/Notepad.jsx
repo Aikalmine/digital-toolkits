@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import ReactQuill from 'react-quill';
 import EditorToolbar, { modules, formats } from "./EditorToolbar";
 import 'react-quill/dist/quill.snow.css';
-import ReactToPrint from 'react-to-print';
+import { useLocalStorage } from '../common/useLocalStorage';
 
 //https://github.com/zenoamaro/react-quill
 function Notepad() {
 
-    const [state, setState] = useState({ value: '' });
-    const handleChange = (value: any) => {
-      setState({ value });
-    };
+    const [notepad, setNotepad] = useLocalStorage('notepad', '');
+    function handleChangeNotePad(e){
+        setNotepad(e.target.value);
+    }
 
   return (
     <div className="notepad">
@@ -18,8 +18,8 @@ function Notepad() {
         <div id="notepadText">
             <ReactQuill
                 theme="snow"
-                value={state.value}
-                onChange={handleChange}
+                value={notepad}
+                onChange={handleChangeNotePad}
                 placeholder={"Write something awesome..."}
                 modules={modules}
                 formats={formats}
