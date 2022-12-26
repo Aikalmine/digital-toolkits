@@ -8,8 +8,10 @@ import { useLocalStorage } from '../common/useLocalStorage';
 function Notepad() {
 
     const [notepad, setNotepad] = useLocalStorage('notepad', '');
+
     function handleChangeNotePad(e){
-        setNotepad(e.target.value);
+        // console.log(e);
+        setNotepad(e);
     }
 
   return (
