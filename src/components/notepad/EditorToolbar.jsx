@@ -1,4 +1,9 @@
 import { Quill } from "react-quill";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
+import { faPaste } from '@fortawesome/free-solid-svg-icons';
+import { faScissors } from '@fortawesome/free-solid-svg-icons';
+import {CopyToClipboard} from 'react-copy-to-clipboard';
 
 // Custom Undo button icon component for Quill editor. You can import it directly
 // from 'quill/assets/icons/undo.svg' but I found that a number of loaders do not
@@ -32,16 +37,37 @@ const CustomPrint = () => (
  </svg>
 );
 
+// cut button icon component for Quill editor
+const CustomCut = () => (
+  <FontAwesomeIcon icon={faScissors} />
+);
+
+// copy button icon component for Quill editor
+const CustomCopy = () => (
+  <div>
+     <CopyToClipboard text={''}
+      onCopy={() => this.setState({copied: true})}>
+      <button><FontAwesomeIcon icon={faCopy} /></button>
+    </CopyToClipboard>
+  </div>
+ 
+);
+
+// paste button icon component for Quill editor
+const CustomPaste = () => (
+  <FontAwesomeIcon icon={faPaste} />
+);
+
 
 // Undo and redo functions for Custom Toolbar
-function undoChange() {
+function handleUndoChange() {
   this.quill.history.undo();
 }
-function redoChange() {
+function handleRedoChange() {
   this.quill.history.redo();
 }
 
-function printChange(){
+function handlePrintChange(){
   //console.log('print'); 
   let notepadText = document.getElementById('notepadText');
   if (notepadText !== null){
@@ -51,6 +77,19 @@ function printChange(){
     window.print();
     document.body.innerHTML = originalContents; 
   } 
+}
+
+function handleCutChange(){
+
+}
+
+
+function handleCopyChange(){
+
+}
+
+function handlePasteChange(){
+
 }
 
 // Add sizes to whitelist and register them
@@ -75,9 +114,12 @@ export const modules = {
   toolbar: {
     container: "#toolbar",
     handlers: {
-      undo: undoChange,
-      redo: redoChange,
-      print:printChange
+      undo: handleUndoChange,
+      redo: handleRedoChange,
+      print:handlePrintChange,
+      cut:handleCutChange,
+      copy:handleCopyChange,
+      paste:handlePasteChange,
     }
   },
   history: {
@@ -175,6 +217,15 @@ export const QuillToolbar = () => (
       </button>
       <button className="ql-print">
         <CustomPrint />
+      </button>
+      <button className="ql-cut">
+        <CustomCut />
+      </button>
+      <button className="ql-copy">
+        <CustomCopy />
+      </button>
+      <button className="ql-paste">
+        <CustomPaste />
       </button>
     </span>
   </div>

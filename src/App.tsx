@@ -1,5 +1,5 @@
 // import './App.css';
-import Notepad from './components/notepad/Notepad';
+import Notepad from './components/notepad/Notepad.jsx';
 
 import {
   BrowserRouter as Router,
