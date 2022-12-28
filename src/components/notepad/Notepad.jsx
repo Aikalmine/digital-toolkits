@@ -9,7 +9,6 @@ function Notepad() {
     const [notepad, setNotepad] = useLocalStorage('notepad', '');
 
     function handleChangeNotePad(e){
-        // console.log(e);
         setNotepad(e);
     }
 

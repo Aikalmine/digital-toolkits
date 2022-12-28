@@ -3,7 +3,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { faPaste } from '@fortawesome/free-solid-svg-icons';
 import { faScissors } from '@fortawesome/free-solid-svg-icons';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
+import { getStorageValue, useLocalStorage } from '../common/useLocalStorage';
 
 // Custom Undo button icon component for Quill editor. You can import it directly
 // from 'quill/assets/icons/undo.svg' but I found that a number of loaders do not
@@ -42,10 +44,22 @@ const CustomCut = () => (
   <FontAwesomeIcon icon={faScissors} />
 );
 
+// clear text area
+const ClearTextArea = () => (
+  <FontAwesomeIcon icon={faTrash} />
+);
+
+function stripHtml(text) {
+  return text.replace(/<[^>]*>/g, '');
+}
+
+let copyText = getStorageValue('notepad');
+copyText = stripHtml(copyText);
 // copy button icon component for Quill editor
 const CustomCopy = () => (
+  
   <div>
-     <CopyToClipboard text={''}
+     <CopyToClipboard text={copyText}
       onCopy={() => this.setState({copied: true})}>
       <button><FontAwesomeIcon icon={faCopy} /></button>
     </CopyToClipboard>
@@ -92,6 +106,10 @@ function handlePasteChange(){
 
 }
 
+function handleTrashChange(){
+  
+}
+
 // Add sizes to whitelist and register them
 const Size = Quill.import("formats/size");
 Size.whitelist = ["extra-small", "small", "medium", "large"];
@@ -120,6 +138,7 @@ export const modules = {
       cut:handleCutChange,
       copy:handleCopyChange,
       paste:handlePasteChange,
+      trash:handleTrashChange,
     }
   },
   history: {
@@ -226,6 +245,9 @@ export const QuillToolbar = () => (
       </button>
       <button className="ql-paste">
         <CustomPaste />
+      </button>
+      <button className="ql-trash">
+        <ClearTextArea />
       </button>
     </span>
   </div>

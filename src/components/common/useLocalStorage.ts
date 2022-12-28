@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-function getStorageValue(key: string, defaultValue = '') {
+export function getStorageValue(key: string, defaultValue = '') {
   // getting stored value
   if (typeof window !== "undefined") {
     const saved = window.localStorage.getItem(key);
