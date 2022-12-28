@@ -3,7 +3,7 @@ import  { modules, formats, CustomUndo, CustomRedo, CustomPrint, CustomCut, Cust
 import 'react-quill/dist/quill.snow.css';
 import { useLocalStorage } from '../common/useLocalStorage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faFilePdf } from '@fortawesome/free-solid-svg-icons';
 
 //https://github.com/zenoamaro/react-quill
 function Notepad() {
@@ -16,6 +16,16 @@ function Notepad() {
 
     function handleClickClear(){
         setNotepad('');
+    }
+
+    function handleClickPdfShare(){
+        // let params =  ''; 
+        // let subject = '';
+        // let body = '';
+        // if (subject) params += `subject=${encodeURIComponent(subject)}`;
+        // if (body) params += `${subject ? '&' : ''}body=${encodeURIComponent(body)}`;
+      //https://stackblitz.com/edit/quill-to-pdf-demo?file=src%2Fapp%2Fapp.component.ts
+        window.open('mailto:email@example.com?subject=subject&body=Body%20goes%20here')
     }
 
   return (
@@ -96,6 +106,9 @@ function Notepad() {
                 </button>
                 <button onClick={handleClickClear} className="ql-trash">
                     <FontAwesomeIcon icon={faTrash} />
+                </button>
+                <button onClick={handleClickPdfShare} className="ql-share">
+                    <FontAwesomeIcon icon={faFilePdf} />
                 </button>
             </span>
         </div>
