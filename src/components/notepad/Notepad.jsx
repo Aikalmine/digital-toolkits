@@ -1,5 +1,5 @@
 import ReactQuill from 'react-quill';
-import  { modules, formats, CustomUndo, CustomRedo, CustomPrint, CustomCut, CustomPaste, CustomCopy } from "./EditorToolbar";
+import  { modules, formats, CustomUndo, CustomRedo, CustomPrint, CustomCopy } from "./EditorToolbar";
 import 'react-quill/dist/quill.snow.css';
 import { useLocalStorage } from '../common/useLocalStorage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -95,20 +95,11 @@ function Notepad() {
                 <button className="ql-print">
                     <CustomPrint />
                 </button>
-                <button className="ql-cut">
-                    <CustomCut />
-                </button>
                 <button className="ql-copy">
                     <CustomCopy />
                 </button>
-                <button className="ql-paste">
-                    <CustomPaste />
-                </button>
                 <button onClick={handleClickClear} className="ql-trash">
                     <FontAwesomeIcon icon={faTrash} />
-                </button>
-                <button onClick={handleClickPdfShare} className="ql-share">
-                    <FontAwesomeIcon icon={faFilePdf} />
                 </button>
             </span>
         </div>
