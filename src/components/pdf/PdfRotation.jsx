@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PDFDocument, degrees } from 'pdf-lib';
 import * as pdfjsLib from 'pdfjs-dist';
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.js`;
@@ -6,9 +6,9 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.j
 function PdfRotation() {
   const [pdfDoc, setPdfDoc] = useState(null);
   const [pdfFile, setPdfFile] = useState(null);
+  const [fileName, setFileName] = useState(0);
   const [imageUrl, setImageUrl] = useState(null);
   const [rotation, setRotation] = useState(0);
-  const canvasRef = useRef(null);
 
   const handleClear = () => {
     setPdfDoc(null);
@@ -22,6 +22,7 @@ function PdfRotation() {
     const loadedPdf = await PDFDocument.load(await file.arrayBuffer());
     setPdfDoc(loadedPdf);
     setPdfFile(file);
+    setFileName(file.name.slice(0, file.name.lastIndexOf(".")));
   };
 
   const readFileData = (file) => {
@@ -93,7 +94,7 @@ function PdfRotation() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'rotated_file.pdf';
+    link.download = `${fileName}_rotated.pdf`;
     link.click();
   };
 
@@ -101,7 +102,7 @@ function PdfRotation() {
     if (pdfFile) {
         convertPdfToImage();
     }
-  }, [pdfFile]);
+  });
 
   return (
     <div className="pdfEditor">
@@ -121,7 +122,6 @@ function PdfRotation() {
           style={{ transform: `rotate(${rotation}deg)` }}
         />
       )}
-      <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
     </div>
   );
 }
