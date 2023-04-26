@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom';
 import Notepad from './components/notepad/Notepad.jsx';
 import PdfEditor from './components/pdf/PdfEditor.jsx';
+import PdfRotation from './components/pdf/PdfRotation.jsx';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
             <Route path="/"/>
             <Route path="/notepad" element={<Notepad/>} />
             <Route path="/pdf-editor" element={<PdfEditor/>} />
+            <Route path="/pdf-rotate" element={<PdfRotation/>} />
         </Routes>
       </div>
     </Router>
