@@ -8,6 +8,7 @@ import {
 import Notepad from './components/notepad/Notepad.jsx';
 import PdfEditor from './components/pdf/PdfEditor.jsx';
 import PdfRotation from './components/pdf/PdfRotation.jsx';
+import Annotate from './components/pdf/annotate/Anotate.jsx';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
             <Route path="/notepad" element={<Notepad/>} />
             <Route path="/pdf-editor" element={<PdfEditor/>} />
             <Route path="/pdf-rotate" element={<PdfRotation/>} />
+            <Route path="/pdf-annotate" element={<Annotate/>} />
         </Routes>
       </div>
     </Router>

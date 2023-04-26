@@ -13,6 +13,9 @@ function PdfEditor() {
           <li>
             <Link to="/pdf-rotate">Pdf Rotate</Link>
           </li>
+          <li>
+            <Link to="/pdf-annotate">Pdf Annotate</Link>
+          </li>
         </ul>
       </div>
     </div>
