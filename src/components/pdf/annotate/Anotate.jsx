@@ -1,70 +1,94 @@
-import React, { useState } from 'react';
-import { Document, Page } from 'react-pdf';
+import React, { useEffect, useState } from 'react';
+import { Document, Page, pdfjs } from 'react-pdf';
+import DraggableTextField from './DraggableTextField';
 
-function Annotate() {
-  const [file, setFile] = useState(null);
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+
+function Anotate() {
+  const [pdfBytes, setPdfBytes] = useState(null);
+  const [pdfUrl, setPdfUrl] = useState('');
   const [numPages, setNumPages] = useState(null);
-  const [textLayer, setTextLayer] = useState(null);
+  const [textFields, setTextFields] = useState([]);
 
-  function onFileChange(event) {
-    setFile(event.target.files[0]);
-  }
+  const onFileChange = async (event) => {
+    const file = event.target.files[0];
+    const data = await file.arrayBuffer({ maxSize: 50 * 1024 * 1024 }); // Increase the max buffer size to 50 MB
+    setPdfBytes(new Uint8Array(data));
+    setPdfUrl(URL.createObjectURL(file));
+  };
 
-  function onDocumentLoadSuccess({ numPages }) {
+  const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
-    setTextLayer(document.querySelector('.react-pdf__Page__textContent'));
-  }
+  };
 
-  function addText(event) {
-    if (textLayer) {
-      const { clientX, clientY } = event;
-      const page = textLayer.closest('.react-pdf__Page');
-      const pageRect = page.getBoundingClientRect();
-      const x = clientX - pageRect.left;
-      const y = clientY - pageRect.top;
-      const span = document.createElement('span');
-      span.style.position = 'absolute';
-      span.style.left = `${x}px`;
-      span.style.top = `${y}px`;
-      span.innerText = 'New Text';
-      textLayer.appendChild(span);
-    }
-  }
+  const handleDownloadClick = () => {};
 
-  function savePdf() {
-    if (file && textLayer) {
-      const pdfDoc = new window.pdfjsLib.PDFDocument();
-      const pdfPages = [];
-      for (let i = 1; i <= numPages; i++) {
-        const canvas = document.querySelector(`canvas.react-pdf__Page__canvas:nth-of-type(${i})`);
-        const viewport = canvas.getClientRects()[0];
-        const pdfPage = pdfDoc.addPage({ size: [viewport.width, viewport.height] });
-        const canvasContext = canvas.getContext('2d');
-        const imageData = canvasContext.getImageData(0, 0, viewport.width, viewport.height);
-        pdfPage.drawText('New Text');
-        pdfPage.drawImage(imageData, { x: 0, y: 0, width: viewport.width, height: viewport.height });
-        pdfPages.push(pdfPage);
-      }
-      pdfDoc.addPage(pdfPages);
-      pdfDoc.save('modified.pdf');
-    }
-  }
+  const handleClickClear = () => {
+    setPdfBytes(null);
+    setPdfUrl('');
+    setTextFields([]);
+  };
+
+  const handleAddTextField = () => {
+    setTextFields([...textFields, { top: 100, left: 100 }]);
+  };
 
   return (
-    <div>
-      <input type="file" onChange={onFileChange} />
-      {file && (
-        <div>
-          <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
-            {Array.from(new Array(numPages), (_, index) => (
-              <Page key={`page_${index + 1}`} pageNumber={index + 1} onClick={addText} />
-            ))}
-          </Document>
-          <button onClick={savePdf}>Save PDF</button>
-        </div>
-      )}
-    </div>
+    <>
+      <div className="row justify-content-center" id="pdfeditor">
+        {!pdfBytes ? (
+          <div className="col-md-12 d-flex justify-content-center">
+            <div className="row justify-content-center">
+              <input
+                type="file"
+                title="Select PDF File"
+                accept="application/pdf"
+                onChange={(e) => onFileChange(e)}
+              />
+            </div>
+          </div>
+        ) : null}
+        {pdfBytes && (
+          <div style={{ width: 600 }}>
+            <button className="btn btn-warning" onClick={handleDownloadClick}>
+              Download
+            </button>
+            <button className="btn btn-warning" onClick={handleClickClear}>
+              Clear
+            </button>
+            <button className="btn btn-primary" onClick={handleAddTextField}>
+              Add Text Field
+            </button>
+            <br />
+            <Document
+              file={pdfUrl}
+              onLoadSuccess={onDocumentLoadSuccess}
+              width={600}
+              height={800}
+            >
+              {Array.from(new Array(numPages), (el, index) => (
+                <Page
+                  key={`page_${index + 1}`}
+                  pageNumber={index + 1}
+                  onRenderError={(error) => console.error(error)}
+                  width={600}
+                  height={800}
+                >
+                  {textFields.map((textField, i) => (
+                    <DraggableTextField
+                      key={i}
+                      top={textField.top}
+                      left={textField.left}
+                    />
+                  ))}
+                </Page>
+              ))}
+            </Document>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 
-export default Annotate;
+export default Anotate;
