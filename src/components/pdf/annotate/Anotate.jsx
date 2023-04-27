@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import DraggableTextField from './DraggableTextField';
-
+import { PDFDocument } from 'pdf-lib';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 function Anotate() {
@@ -21,8 +21,6 @@ function Anotate() {
     setNumPages(numPages);
   };
 
-  const handleDownloadClick = () => {};
-
   const handleClickClear = () => {
     setPdfBytes(null);
     setPdfUrl('');
@@ -32,6 +30,52 @@ function Anotate() {
   const handleAddTextField = () => {
     setTextFields([...textFields, { top: 100, left: 100 }]);
   };
+
+  const handleSaveClick = () => {
+    handleDownloadClick();
+  };
+
+  const handleCancelClick = () => {
+    handleClickClear();
+  };
+
+  const handleDownloadClick = async () => {
+    const pdfDoc = await PDFDocument.load(pdfBytes);
+    const pages = pdfDoc.getPages();
+    const font = await pdfDoc.embedFont('Helvetica');
+    for (let i = 0; i < textFields.length; i++) {
+      const textField = textFields[i];
+      const page = pages[textField.page - 1];
+      const { width, height } = page.getSize();
+      const text = textField.text;
+      const fontSize = textField.fontSize || 12;
+      const x = (textField.left / 100) * width;
+      const y = height - (textField.top / 100) * height - fontSize;
+      const contentStream = page
+        .getOperatorList()
+        .then((operatorList) => {
+          pdfDoc.createContentStream(
+            [
+              ...operatorList,
+              ...font.encodeText(text),
+              'Tf',
+              `${fontSize} Tf`,
+              `${x} ${y} Td`,
+              'T*',
+            ],
+            { resources: page.getResources() }
+          );
+        });
+      page.addContentStreams(contentStream);
+    }
+    const pdfBytes = await pdfDoc.save();
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'annotated.pdf';
+    link.click();
+  };
+
 
   return (
     <>
@@ -79,6 +123,8 @@ function Anotate() {
                       key={i}
                       top={textField.top}
                       left={textField.left}
+                      onSave={handleSaveClick}
+                      onCancel={handleCancelClick}
                     />
                   ))}
                 </Page>

@@ -1,60 +1,52 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
+import { useDrag } from 'react-use-gesture';
 
-const DraggableTextField = ({ pageWidth, pageHeight, top, left }) => {
-  const [position, setPosition] = useState({ x: left, y: top });
+function DraggableTextField(props) {
+  const { top, left } = props;
   const [text, setText] = useState('');
+  const ref = useRef();
 
-  const handleMouseDown = (event) => {
-    const startX = event.pageX - position.x;
-    const startY = event.pageY - position.y;
+  const bind = useDrag(({ event, down, movement: [mx, my] }) => {
+    if (down) {
+      ref.current.style.cursor = 'grabbing';
+      ref.current.style.top = `${top + my}px`;
+      ref.current.style.left = `${left + mx}px`;
+    } else {
+      ref.current.style.cursor = 'grab';
+      handleTextFieldPositionChange(ref.current.style.top, ref.current.style.left, text);
+    }
+  });
 
-    const handleMouseMove = (event) => {
-      setPosition({
-        x: event.pageX - startX,
-        y: event.pageY - startY
-      });
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-
-    document.addEventListener('mouseup', () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-    });
-  };
-
-  const handleChange = (event) => {
+  const handleInputChange = (event) => {
     setText(event.target.value);
   };
 
-  const styles = {
-    position: 'absolute',
-    top: position.y,
-    left: position.x
+  const handleSave = () => {
+    props.onSave(text);
   };
 
-  const inputStyles = {
-    width: '100%',
-    padding: '5px',
-    boxSizing: 'border-box',
-    fontSize: '16px',
-    fontFamily: 'Arial',
-    lineHeight: '1.5',
-    border: '2px solid #ccc',
-    borderRadius: '4px',
-    outline: 'none'
+  const handleCancel = () => {
+    props.onCancel();
+  };
+
+  const handleTextFieldPositionChange = (top, left, text) => {
+    props.onPositionChange(top, left, text);
   };
 
   return (
-    <div style={styles} onMouseDown={handleMouseDown}>
-      <input
-        type="text"
-        value={text}
-        onChange={handleChange}
-        style={inputStyles}
-        placeholder="Type here"
-      />
+    <div
+      className="draggable-text-field"
+      ref={ref}
+      {...bind()}
+      style={{ position: 'absolute', top: `${top}px`, left: `${left}px`, cursor: 'grab' }}
+    >
+      <input type="text" value={text} onChange={handleInputChange} />
+      <div>
+        <button onClick={handleSave}>Save</button>
+        <button onClick={handleCancel}>Cancel</button>
+      </div>
     </div>
   );
-};
+}
 
 export default DraggableTextField;
