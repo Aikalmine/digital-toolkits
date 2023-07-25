@@ -16,6 +16,9 @@ function PdfEditor() {
           <li>
             <Link to="/pdf-annotate">Pdf Annotate</Link>
           </li>
+          <li>
+            <Link to="/e2j">E2J Editor</Link>
+          </li>
         </ul>
       </div>
     </div>
